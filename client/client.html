@@ -6,6 +6,89 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
+    const handleResponse = (xhr) => {
+      const content = document.querySelector('#content');
+      
+      let html = "";
+
+      switch(xhr.status)
+      {
+        case 200:
+          html += "<h1>Success</h1>";
+          break;
+        case 201:
+          html += "<h1>Create</h1>";
+          break;
+        case 204:
+          html += "<h1>Updated (No Content)</h1>";
+          break;
+        case 400:
+          html += "<h1>Bad Request</h1>";
+          break;
+        case 404:
+          html += "<h1>Resource Not Found</h1>";
+          break;
+        default :
+          break;
+      }
+
+      if(xhr.responseText != "")
+      {
+        html += xhr.responseText;
+      }
+      content.innerHTML = html;
+    }
+
+    const requestUpdate = (e) =>{
+
+      e.preventDefault();
+
+      const url = document.querySelector('#urlField').value;
+      const type = document.querySelector('#methodSelect').value;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open(type, url);
+
+      xhr.onload = () => handleResponse(xhr);
+
+      xhr.send();
+    };
+
+    const postUserData = (e) =>{
+
+      e.preventDefault();
+
+      const nameForm = document.querySelector("#nameForm");
+
+      const nameAction = nameForm.getAttribute('action');
+      const nameMethod = nameForm.getAttribute('method');
+
+      const nameField = nameForm.querySelector('#nameField');
+      const ageField = nameForm.querySelector('#ageField');
+
+      const xhr = new XMLHttpRequest();
+      xhr.open(nameMethod, nameAction);
+
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+      xhr.onload = () => handleResponse(xhr);
+
+      xhr.send(`name=${nameField.value}&age=${ageField.value}`);
+
+    }
+    
+    const init = () => {
+
+      const userForm = document.querySelector("#userForm");
+      userForm.addEventListener('submit', requestUpdate);
+
+      const newUserForm = document.querySelector("#nameForm");
+      newUserForm.addEventListener('submit', postUserData);
+
+    };
+
+    window.onload = init;
 
   </script>
 </head>
